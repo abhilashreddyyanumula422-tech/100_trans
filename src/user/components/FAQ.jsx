@@ -8,11 +8,7 @@ const faqs = [
     answer:
       "100Transcripts LLP offers certified transcripts, secure E-Transcripts, credential evaluations, and verified degree certificates. They also provide courier delivery, application tracking, and internship opportunities—trusted by thousands across India and partnered with global agencies like WES, IEE, ECE, and TEC.",
   },
-  {
-    question: "What services does 100Transcripts LLP provide are there?",
-    answer:
-      "100Transcripts LLP offers certified transcripts, secure E-Transcripts, credential evaluations, and verified degree certificates. They also provide courier delivery, application tracking, and internship opportunities—trusted by thousands across India and partnered with global agencies like WES, IEE, ECE, and TEC.",
-  },
+
   {
     question: "Is the process secure and recognized?",
     answer:
