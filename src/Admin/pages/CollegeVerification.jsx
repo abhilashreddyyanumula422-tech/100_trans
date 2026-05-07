@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   ShieldCheck, Building2, Clock, Eye, CheckCircle, X, Globe, 
   User, Calendar, Layers, Send, MessageSquare, CheckCircle2, Circle, Truck,
@@ -21,7 +21,7 @@ const CollegeVerification = () => {
   // ✅ Dynamic API Base
   const API_BASE = `http://192.168.1.53:8000`;
 
-  const fetchVerifications = async () => {
+  const fetchVerifications = useCallback(async () => {
     try {
       const res = await fetch(`${API_BASE}/api/verifications/`);
       const data = await res.json();
@@ -31,11 +31,11 @@ const CollegeVerification = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_BASE]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchVerifications();
-  }, []);
+  }, [fetchVerifications]);
 
   // 🟠 NEW: Email logic
   const emailBody = replyingTo ? `Dear ${replyingTo.student},

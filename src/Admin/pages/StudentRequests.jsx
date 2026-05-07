@@ -3,7 +3,7 @@ import {
   MapPin, Mail, CreditCard, Truck, FileCheck, CheckCircle2, Circle,
   Send, Copy, Check, AlertCircle, MessageCircle, Phone
 } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import EmptyState from "../../components/EmptyState";
 
 const StudentRequests = () => {
@@ -24,9 +24,9 @@ const StudentRequests = () => {
   const API_BASE = `http://192.168.1.53:8000`;
 
   // ✅ FETCH API
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/applications/`, {
+      const res = await fetch(`${API_BASE}/api/all-applications/`, {
         cache: "no-store"
       });
       const data = await res.json();
@@ -34,11 +34,11 @@ const StudentRequests = () => {
     } catch (err) {
       // Error fetching requests handled
     }
-  };
+  }, [API_BASE]);
 
   useEffect(() => {
     fetchRequests();
-  }, []);
+  }, [fetchRequests]);
 
   const handleSendEmail = async () => {
     if (!replyingTo) return;

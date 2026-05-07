@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import collegesData from "../data/collegesData";
 import Partners from "../components/Partners";
 import HowItWorks from "../components/HowItWorks";
 import {
@@ -12,7 +13,7 @@ import {
   FiUploadCloud,
 } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
-import heroImage from "../../assets/partnerclg.png";
+import partnerclge from "../../assets/partnerclg.png";
 
 // ✅ Counter animation
 const Counter = ({ value }) => {
@@ -45,86 +46,84 @@ const Counter = ({ value }) => {
   );
 };
 
-const stats = [
-  { value: "17,000+", label: "Students Served", icon: <FiCheckCircle /> },
-  { value: "50+", label: "Partner Universities", icon: <FiFileText /> },
-  { value: "98%", label: "Success Rate", icon: <FiShield /> },
-  { value: "24/7", label: "Student Support", icon: <FiClock /> },
-];
-
-const services = [
-  "Marks Memorandum",
-  "MOI Letter",
-  "Transcripts",
-  "Degree Certificate",
-  "Verifications (for Organizations)",
-  "Pharmacy Council Documents",
-];
-
-const requirements = [
-  "Transcripts",
-  "Marks Memorandum",
-  "MOI Letter",
-  "Degree Certificate",
-  "Verifications",
-  "Pharmacy Council Documents",
-];
-
-const processSteps = [
-  { title: "Submit Request", text: "Fill in your details and choose the required document service." },
-  { title: "Upload Documents", text: "Share clear document copies so our team can begin the process quickly." },
-  { title: "Verification & Processing", text: "We coordinate the submission and processing with the concerned institution." },
-  { title: "Dispatch / Delivery", text: "Your documents are prepared and sent as per the required evaluation or verification process." },
-];
-
-// ✅ Convert slug back to display name
-const slugToName = (slug) =>
-  slug
-    .replace(/-/g, " ")
-    .replace(/\band\b/g, "&")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-
-// ✅ Generate short name (initials)
-const getShortName = (name) =>
-  name
-    .split(" ")
-    .filter((w) => w.length > 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
-
-const CollegePage = () => {
+const PartnerCollege = () => {
   const { collegeId } = useParams();
-  const [collegeName, setCollegeName] = useState(slugToName(collegeId));
-  const shortName = getShortName(collegeName);
+  const [college, setCollege] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Try to fetch actual name from backend
+  // Try to fetch actual college data from collegesData.jsx
   useEffect(() => {
-    const fetchName = async () => {
-      try {
-        const res = await fetch(`http://${window.location.hostname}:8000/api/colleges/`);
-        if (res.ok) {
-          const data = await res.json();
-          const toSlug = (name) =>
-            name.toLowerCase().replace(/[&]/g, "and").replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").trim();
-          const match = data.find((c) => toSlug(c.name) === collegeId);
-          if (match) setCollegeName(match.name);
-        }
-      } catch (err) {
-        // Use slug-derived name as fallback
+    const fetchCollege = () => {
+      setLoading(true);
+      // Ensure collegeId is treated as a string key or handle numeric indexing if needed
+      const foundCollege = collegesData[collegeId];
+      
+      if (foundCollege) {
+        setCollege({ id: collegeId, ...foundCollege });
+        setError(""); // Clear any previous error
+      } else {
+        setError("College not found in local records");
+        setCollege(null);
       }
+      setLoading(false);
     };
-    fetchName();
+    
+    fetchCollege();
   }, [collegeId]);
 
+  // Default stats for colleges
+  const stats = college?.stats?.length > 0 ? college.stats.map((stat, index) => ({
+    value: stat.value,
+    label: stat.label,
+    icon: index === 0 ? <FiCheckCircle /> : index === 1 ? <FiFileText /> : index === 2 ? <FiShield /> : <FiClock />
+  })) : [
+    { value: "17,000+", label: "Students Served", icon: <FiCheckCircle /> },
+    { value: "50+", label: "Partner Universities", icon: <FiFileText /> },
+    { value: "98%", label: "Success Rate", icon: <FiShield /> },
+    { value: "24/7", label: "Student Support", icon: <FiClock /> },
+  ];
+
+  // Default services for colleges
+  const services = college?.services?.length > 0 ? college.services : [
+    "Marks Memorandum",
+    "MOI Letter", 
+    "Transcripts",
+    "Degree Certificate",
+    "Verifications (for Organizations)",
+    "Pharmacy Council Documents",
+  ];
+
+  const requirements = [
+    "Transcripts",
+    "Marks Memorandum",
+    "MOI Letter",
+    "Degree Certificate",
+    "Verifications",
+    "Pharmacy Council Documents",
+  ];
+
+  const processSteps = [
+    { title: "Submit Request", text: "Fill in your details and choose the required document service." },
+    { title: "Upload Documents", text: "Share clear document copies so our team can begin the process quickly." },
+    { title: "Verification & Processing", text: "We coordinate the submission and processing with the concerned institution." },
+    { title: "Dispatch / Delivery", text: "Your documents are prepared and sent as per the required evaluation or verification process." },
+  ];
+
+  // Get college name and short name
+  const collegeName = college?.title || "College";
+  const shortName = college?.short || "CLG";
+
   const [formData, setFormData] = useState({
-    fullName: "", email: "", university: "", college: collegeName,
+    fullName: "", email: "", university: collegeName, college: collegeName,
     course: "", phone: "", alternativeNumber: "", requirement: "",
     termsAccepted: false, declarationAccepted: false,
   });
 
   useEffect(() => {
-    setFormData((prev) => ({ ...prev, college: collegeName }));
+    if (collegeName !== "College") {
+      setFormData((prev) => ({ ...prev, college: collegeName, university: collegeName }));
+    }
   }, [collegeName]);
 
   const handleChange = (e) => {
@@ -136,54 +135,95 @@ const CollegePage = () => {
     e.preventDefault();
   };
 
+  if (loading) {
+    return (
+      <div className="bg-white text-slate-900 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading college details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !college) {
+    return (
+      <div className="bg-white text-slate-900 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 mb-4">
+            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-slate-600 mb-2">College not found</p>
+          <p className="text-slate-500 text-sm mb-4">{error}</p>
+          <Link to="/" className="text-blue-600 hover:text-blue-700">
+            ← Back to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white text-slate-900">
       {/* ══ HERO ══ */}
-      <section className="relative overflow-hidden bg-[#f8fbff] pt-28 pb-16 md:pt-36 md:pb-24">
-        <div className="absolute inset-0 bg-right bg-no-repeat opacity-100" style={{ backgroundImage: `url(${heroImage})`, backgroundSize: "contain" }} />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(248,251,255,0.98)_0%,rgba(248,251,255,0.95)_28%,rgba(248,251,255,0.78)_48%,rgba(248,251,255,0.30)_70%,rgba(248,251,255,0.02)_100%)]" />
+      <section className="relative overflow-hidden bg-white pt-24 pb-12 md:pt-36 md:pb-24">
+        <div className="absolute inset-0 bg-right bg-no-repeat opacity-100 hidden md:block" style={{ backgroundImage: `url(${partnerclge})`, backgroundSize: "contain" }} />
+        {/* Mobile background */}
+        <div className="absolute inset-0 bg-center bg-no-repeat opacity-10 md:hidden" style={{ backgroundImage: `url(${partnerclge})`, backgroundSize: "cover" }} />
+        
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(248,251,255,0.98)_0%,rgba(248,251,255,0.95)_28%,rgba(248,251,255,0.78)_48%,rgba(248,251,255,0.30)_70%,rgba(248,251,255,0.02)_100%)] hidden md:block" />
+        {/* Mobile gradient */}
+        <div className="absolute inset-0 bg-white/90 md:hidden" />
+        
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.14),_transparent_28%)]" />
         <motion.div animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 6, repeat: Infinity }} className="absolute left-0 top-0 h-72 w-72 bg-blue-200 rounded-full blur-3xl" />
 
-        <div className="relative mx-auto max-w-7xl px-2 md:px-4 lg:px-2">
-          <div className="grid items-center gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-            <motion.div initial={{ opacity: 0, x: -80 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, ease: "easeOut" }} className="relative w-full pl-0 lg:-ml-10">
-              <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 shadow-sm backdrop-blur-sm">
-                <span className="h-2 w-2 rounded-full bg-blue-600" />
-                100 Transcripts LLP
+        <div className="relative mx-auto max-w-7xl px-4 md:px-8">
+          <div className="grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+            <motion.div initial={{ opacity: 0, x: -80 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, ease: "easeOut" }} className="relative w-full text-center md:text-left">
+              <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
+                <div className="w-20 h-20 md:w-16 md:h-16 rounded-xl bg-white shadow-lg p-2 flex items-center justify-center border border-slate-100">
+                  <img src={college?.logo} alt={shortName} className="max-w-full max-h-full object-contain" />
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/90 px-4 py-2 text-xs font-bold uppercase tracking-widest text-blue-700 shadow-sm backdrop-blur-sm">
+                  <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
+                  Partnered College
+                </div>
               </div>
 
-              <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }} className="mt-5 max-w-4xl text-4xl font-bold leading-tight text-[#233a59] md:text-5xl xl:text-6xl">
-                Exclusive Transcript Services for{" "}
-                <span className="text-blue-700">{shortName} Students</span>
+              <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }} className="mt-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-[#233a59]">
+                Exclusive Services for{" "}
+                <span className="block md:inline text-blue-700">{collegeName}</span>
               </motion.h1>
 
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 0.8 }} className="mt-5 max-w-2xl text-base leading-8 text-slate-600 md:text-lg">
-                {collegeName} students can now apply for transcript and document services without visiting the college. We make the process simple, guided, and reliable for credential evaluations and official submissions.
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 0.8 }} className="mt-6 mx-auto md:mx-0 max-w-2xl text-base leading-relaxed text-slate-600 md:text-lg">
+                {college?.description || `${collegeName} students can now apply for transcript and document services without visiting the college. We make the process simple, guided, and reliable for credential evaluations and official submissions.`}
               </motion.p>
 
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-8 flex flex-wrap justify-center md:justify-start gap-3">
                 {["Fast processing", "Secure documentation", "Dedicated support"].map((t) => (
-                  <div key={t} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200">
+                  <div key={t} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs md:text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200">
                     <FiCheckCircle className="text-blue-600" /> {t}
                   </div>
                 ))}
               </div>
 
-              <div className="mt-8 flex flex-wrap gap-4">
-                <motion.a whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }} href="/contact" className="inline-flex items-center gap-2 rounded-full bg-[#2f4a6d] px-6 py-3 text-sm font-semibold text-white shadow-lg transition">
-                  <FaWhatsapp /> Contact Us
+              <div className="mt-10 flex flex-col sm:flex-row justify-center md:justify-start gap-4">
+                <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href="/contact" className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 px-8 py-4 text-sm font-bold text-white shadow-xl transition">
+                  <FaWhatsapp size={18} /> Contact Us
                 </motion.a>
-                <motion.a whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }} href="#submit-documents" className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-6 py-3 text-sm font-semibold text-blue-700 shadow-sm">
+                <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href="#submit-documents" className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-blue-200 bg-white px-8 py-4 text-sm font-bold text-blue-700 shadow-lg">
                   Submit Documents <FiArrowRight />
                 </motion.a>
               </div>
 
-              <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 {stats.map((item, index) => (
-                  <motion.div key={item.label} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: index * 0.08 }} viewport={{ once: true }} className="rounded-2xl bg-white/90 px-4 py-4 text-center shadow-md ring-1 ring-slate-100 backdrop-blur-sm">
-                    <p className="text-2xl font-bold text-[#2f4a6d]"><Counter value={item.value} /></p>
-                    <p className="mt-1 text-xs font-medium leading-5 text-slate-600">{item.label}</p>
+                  <motion.div key={item.label} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: index * 0.08 }} viewport={{ once: true }} className="rounded-2xl bg-white/90 px-4 py-6 text-center shadow-xl ring-1 ring-slate-100 backdrop-blur-sm">
+                    <p className="text-2xl font-black text-[#2f4a6d]"><Counter value={item.value} /></p>
+                    <p className="mt-2 text-[10px] font-bold leading-tight text-slate-500 uppercase tracking-widest">{item.label}</p>
                   </motion.div>
                 ))}
               </div>
@@ -224,11 +264,11 @@ const CollegePage = () => {
       </section>
 
       {/* ══ SUBMIT FORM ══ */}
-      <section id="submit-documents" className="bg-slate-50 py-16 md:py-20">
+      <section id="submit-documents" className="bg-white py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-6 md:px-12">
           <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
             <motion.div initial={{ opacity: 0, x: -35 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
-              <div className="sticky top-28 rounded-[28px] bg-[#2f4a6d] p-8 text-white shadow-xl">
+              <div className="sticky top-28 rounded-[28px] bg-gradient-to-r from-blue-600 to-cyan-600 p-8 text-white shadow-xl">
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-200">Get Started</p>
                 <h2 className="mt-3 text-3xl font-bold leading-tight">Submit Your Documents</h2>
                 <p className="mt-4 text-sm leading-7 text-blue-100/90">Please fill in your details below, and our team will get back to you shortly with the next steps.</p>
@@ -256,7 +296,7 @@ const CollegePage = () => {
                     <input type="text" name="university" value={formData.university} onChange={handleChange} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500" required />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-slate-700">College / School Name *</label>
+                    <label className="mb-2 block text-sm font-semibold text-slate-700">College Name *</label>
                     <input type="text" name="college" value={formData.college} onChange={handleChange} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500" required />
                   </div>
                   <div>
@@ -298,7 +338,7 @@ const CollegePage = () => {
                     </label>
                   </div>
                   <div className="md:col-span-2">
-                    <button type="submit" className="inline-flex w-full items-center justify-center rounded-xl bg-[#2f4a6d] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-[#213754]">Submit</button>
+                    <button type="submit" className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-3.5 text-sm font-semibold text-white transition hover:from-blue-700 hover:to-cyan-700">Submit</button>
                   </div>
                 </div>
               </form>
@@ -308,7 +348,7 @@ const CollegePage = () => {
       </section>
 
       {/* ══ PROCESS STEPS ══ */}
-      <section className="relative overflow-hidden bg-[#eef6ff] pt-28 pb-16 md:pt-36 md:pb-24">
+      <section className="relative overflow-hidden bg-white pt-28 pb-16 md:pt-36 md:pb-24">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.08),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(47,74,109,0.08),transparent_28%)]" />
         <div className="relative mx-auto max-w-7xl px-6 md:px-12">
           <motion.div initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }} className="mb-12 text-center">
@@ -371,4 +411,4 @@ const CollegePage = () => {
   );
 };
 
-export default CollegePage;
+export default PartnerCollege;

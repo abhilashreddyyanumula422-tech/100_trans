@@ -68,7 +68,7 @@ const Navbar = () => {
         { name: "Original Degree", path: "/services/od" },
       ],
     },
-    { name: "Verification", path: "/services/verification" },
+   
   ];
 
   // PARTNERED COLLEGES
@@ -83,7 +83,7 @@ const Navbar = () => {
     },
     {
       name: "Siddhartha Institute",
-      path: "/partnered-colleges/siddhartha-institute",
+      path: "/partnered-colleges/siddhartha-institute-of-technology-sciences",
     },
   ];
 
@@ -447,11 +447,120 @@ const universities = [
         {/* MOBILE MENU BUTTON */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="lg:hidden p-2 rounded-lg text-slate-800"
+          className="lg:hidden p-2 rounded-lg text-slate-800 hover:bg-slate-100 transition-colors"
         >
-          {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+          {isMobileMenuOpen ? <FiX size={26} /> : <FiMenu size={26} />}
         </button>
       </div>
+
+      {/* MOBILE MENU */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="lg:hidden border-t border-slate-100 bg-white overflow-hidden"
+          >
+            <div className="px-4 py-6 space-y-6">
+              {/* MOBILE SEARCH */}
+              <div className="relative">
+                <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search universities..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setShowSearchResults(true);
+                  }}
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm font-medium outline-none focus:border-blue-500 transition-all"
+                />
+                {showSearchResults && searchTerm && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto z-[201]">
+                    {filteredUniversities.length > 0 ? (
+                      filteredUniversities.map((uni, index) => (
+                        <div
+                          key={index}
+                          onClick={() => {
+                            setSearchTerm(uni);
+                            setShowSearchResults(false);
+                            setIsMobileMenuOpen(false);
+                            navigate("/", { state: { university: uni } });
+                            setTimeout(() => {
+                              document.getElementById("university-search")?.scrollIntoView({ behavior: "smooth" });
+                            }, 200);
+                          }}
+                          className="px-4 py-3 text-sm font-semibold text-slate-700 border-b border-slate-50 last:border-b-0"
+                        >
+                          {uni}
+                        </div>
+                      ))
+                    ) : (
+                      <p className="px-4 py-3 text-sm text-slate-500">No university found</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* MOBILE LINKS */}
+              <ul className="space-y-4 font-bold text-sm tracking-wide text-slate-700">
+                <li><Link to="/" onClick={() => setIsMobileMenuOpen(false)}>HOME</Link></li>
+                <li><Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>ABOUT</Link></li>
+                <li>
+                  <button 
+                    onClick={() => setServicesDropdown(!servicesDropdown)}
+                    className="flex items-center justify-between w-full"
+                  >
+                    SERVICES <FiChevronDown className={servicesDropdown ? "rotate-180" : ""} />
+                  </button>
+                  {servicesDropdown && (
+                    <ul className="mt-3 ml-4 space-y-3 border-l-2 border-slate-100 pl-4 font-semibold text-slate-600">
+                      {servicesLinks.map(s => (
+                        <li key={s.name}>
+                          <p className="text-[10px] text-slate-400 uppercase mb-1">{s.name}</p>
+                          <div className="space-y-2">
+                            {s.submenu.map(sub => (
+                              <Link key={sub.name} to={sub.path} className="block" onClick={() => setIsMobileMenuOpen(false)}>{sub.name}</Link>
+                            ))}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+                <li><Link to="/apply" onClick={() => setIsMobileMenuOpen(false)}>APPLY</Link></li>
+                <li><Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>CONTACT</Link></li>
+                <li><Link to="/universities" onClick={() => setIsMobileMenuOpen(false)}>UNIVERSITIES</Link></li>
+                <li>
+                  <button 
+                    onClick={() => setCollegesDropdown(!collegesDropdown)}
+                    className="flex items-center justify-between w-full"
+                  >
+                    PARTNERED <FiChevronDown className={collegesDropdown ? "rotate-180" : ""} />
+                  </button>
+                  {collegesDropdown && (
+                    <ul className="mt-3 ml-4 space-y-3 border-l-2 border-slate-100 pl-4 font-semibold text-slate-600">
+                      {partneredColleges.map(c => (
+                        <li key={c.name}><Link to={c.path} onClick={() => setIsMobileMenuOpen(false)}>{c.name}</Link></li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              </ul>
+
+              {/* MOBILE AUTH */}
+              <div className="pt-4 border-t border-slate-100">
+                {isLoggedIn ? (
+                  <button onClick={handleLogout} className="w-full py-3 bg-red-50 text-red-600 font-bold rounded-xl">LOGOUT</button>
+                ) : (
+                  <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-3 bg-blue-600 text-white text-center font-bold rounded-xl">LOGIN</Link>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };

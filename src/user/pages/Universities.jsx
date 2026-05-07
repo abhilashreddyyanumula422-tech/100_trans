@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { FiSearch } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiSearch, FiArrowRight } from "react-icons/fi";
 import collegesData from "../data/collegesData";
 
 const universities = [
@@ -97,7 +97,7 @@ const Universities = () => {
   return (
     <div className="bg-white text-slate-900 min-h-screen">
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-br  from-blue-600 via-cyan-500 to-sky-500 pt-32 pb-20 md:pt-40 md:pb-28">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-cyan-500 to-sky-500 pt-32 pb-20 md:pt-40 md:pb-28">
         {/* Animated Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
@@ -170,100 +170,98 @@ const Universities = () => {
 
       {/* COLLEGES GRID */}
       <section className="py-16 md:py-24 bg-gradient-to-b from-slate-50 to-white relative">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `linear-gradient(90deg, #3b82f6 1px, transparent 1px), linear-gradient(#3b82f6 1px, transparent 1px)`,
-            backgroundSize: '100px 100px'
-          }}></div>
-        </div>
-
         <div className="mx-auto max-w-7xl px-6 relative z-10">
           {/* Search Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-12"
-          >
-            <div className="relative max-w-2xl mx-auto">
-              <FiSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search universities by name..."
-                value={searchTerm}
-                onChange={handleSearch}
-                className="w-full pl-14 pr-6 py-4 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 shadow-lg"
-              />
+          <div className="relative max-w-2xl mx-auto mb-16">
+            <FiSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search universities by name or short name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-14 pr-6 py-4 rounded-2xl border-2 border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-all duration-300 shadow-lg"
+            />
 
-              {/* SEARCH RESULTS DROPDOWN */}
-              {showResults && filteredUniversities.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 max-h-80 overflow-y-auto z-50">
-                  {filteredUniversities.slice(0, 50).map((uni, index) => (
-                    <div
-                      key={index}
-                      onClick={() => selectUniversity(uni)}
-                      className="px-6 py-4 cursor-pointer hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-b-0"
-                    >
-                      <p className="text-sm font-semibold text-slate-700">{uni}</p>
+            {/* SEARCH DROPDOWN */}
+            <AnimatePresence>
+              {searchTerm.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute z-50 mt-3 w-full bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden max-h-[400px] overflow-y-auto custom-scrollbar"
+                >
+                  {filteredColleges.length > 0 ? (
+                    filteredColleges.map((college) => (
+                      <Link
+                        key={college.id}
+                        to={`/universities/${college.id}`}
+                        className="flex items-center gap-4 px-6 py-4 hover:bg-blue-50 transition-colors border-b border-slate-50 last:border-none group"
+                      >
+                        <div className="w-10 h-10 flex-shrink-0 rounded-lg bg-slate-50 border border-slate-100 p-1.5 flex items-center justify-center">
+                          <img src={college.logo} alt="" className="max-w-full max-h-full object-contain" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-sm font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
+                            {college.title.replace("Exclusive Transcript Services for ", "").replace("Exclusive Document Services for ", "").replace(" Students", "")}
+                          </div>
+                          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            {college.short}
+                          </div>
+                        </div>
+                        <FiArrowRight className="text-slate-300 group-hover:text-blue-600 transition-transform group-hover:translate-x-1" />
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="px-6 py-10 text-center">
+                      <p className="text-slate-500 font-medium">No universities found matching your search.</p>
                     </div>
-                  ))}
-                </div>
+                  )}
+                </motion.div>
               )}
+            </AnimatePresence>
+          </div>
 
-              {showResults && filteredUniversities.length === 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 z-50">
-                  <p className="text-slate-500 text-center">No universities found</p>
-                </div>
-              )}
-            </div>
-            {searchTerm && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center text-slate-500 mt-3 font-medium"
-              >
-                Found {filteredUniversities.length} universit{filteredUniversities.length !== 1 ? 'ies' : 'y'}
-              </motion.p>
-            )}
-          </motion.div>
-
-          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {filteredColleges.map((college, index) => (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filteredColleges.map((college, idx) => (
               <motion.div
                 key={college.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.03 }}
+                transition={{ delay: idx * 0.03 }}
                 viewport={{ once: true }}
+                className="group relative flex flex-col overflow-hidden rounded-2xl bg-white border border-slate-200 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1.5 hover:border-blue-200"
               >
-                <Link
-                  to={`/partnered-colleges/${college.id}`}
-                  className="group block h-full"
-                >
-                  <div className="relative h-full rounded-3xl border border-slate-200 bg-white p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 overflow-hidden">
-                    {/* Gradient Background on Hover */}
-                    <div className="absolute inset-0 bg-gradient-to-br  from-blue-600 via-cyan-500 to-sky-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    
-                    {/* Content */}
-                    <div className="relative z-10">
-                      {/* College Logo */}
-                      <div className="mx-auto mb-4 h-24 w-24 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center group-hover:from-white/20 group-hover:to-white/30 transition-all duration-500 group-hover:scale-110">
-                        <span className="text-2xl font-black text-blue-700 group-hover:text-white transition-colors duration-500">
-                          {college.short}
-                        </span>
-                      </div>
-
-                      {/* College Name */}
-                      <h3 className="text-center text-sm font-bold text-slate-800 leading-tight group-hover:text-white transition-colors duration-500">
-                        {college.title.split("for")[0].trim()}
-                      </h3>
-                    </div>
-
-                    {/* Shine Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                {/* Minimal Header with Logo */}
+                <div className="relative p-6 pb-4 flex flex-col items-center text-center">
+                  <div className="w-20 h-20 mb-4 rounded-2xl bg-white shadow-md p-3 flex items-center justify-center border border-slate-100 transition-transform duration-300 group-hover:scale-110">
+                    <img 
+                      src={college.logo} 
+                      alt={college.short} 
+                      className="max-w-full max-h-full object-contain" 
+                    />
                   </div>
-                </Link>
+                  <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-[0.15em] mb-3">
+                    {college.short}
+                  </span>
+                  <h3 className="text-base font-bold text-slate-800 line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors">
+                    {college.title.replace("Exclusive Transcript Services for ", "").replace("Exclusive Document Services for ", "").replace(" Students", "")}
+                  </h3>
+                </div>
+
+                {/* Compact Info Section */}
+                <div className="px-6 pb-6 mt-auto">
+                  <p className="text-slate-500 text-xs line-clamp-2 mb-4 leading-relaxed">
+                    {college.description}
+                  </p>
+
+                  <Link
+                    to={`/universities/${college.id}`}
+                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-slate-50 text-blue-600 font-bold text-xs hover:bg-blue-600 hover:text-white transition-all duration-300"
+                  >
+                    View Details <FiArrowRight />
+                  </Link>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -271,7 +269,7 @@ const Universities = () => {
       </section>
 
       {/* CTA SECTION */}
-      <section className="py-20 md:py-28 bg-gradient-to-br from-blue-600 via-cyan-500 to-sky-500relative overflow-hidden">
+      <section className="py-20 md:py-28 bg-gradient-to-br from-blue-600 via-cyan-500 to-sky-500 relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{

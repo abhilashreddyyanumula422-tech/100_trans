@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import collegesData from "../data/collegesData";
 import Partners from "../components/Partners";
 import HowItWorks from "../components/HowItWorks";
 import {
@@ -51,28 +52,20 @@ const UniversityDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Try to fetch actual university data from backend
+  // Try to fetch actual university data from collegesData.jsx
   useEffect(() => {
-    const fetchUniversity = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("http://localhost:8000/api/universities/");
-        if (!response.ok) throw new Error("Failed to fetch universities");
-        
-        const data = await response.json();
-        // Find the university by ID (string ID from URL)
-        const foundUniversity = Object.entries(data).find(([id, uni]) => id === universityId);
-        
-        if (foundUniversity) {
-          setUniversity({ id: foundUniversity[0], ...foundUniversity[1] });
-        } else {
-          setError("University not found");
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+    const fetchUniversity = () => {
+      setLoading(true);
+      const foundUniversity = collegesData[universityId];
+      
+      if (foundUniversity) {
+        setUniversity({ id: universityId, ...foundUniversity });
+        setError(""); // Clear previous error
+      } else {
+        setError("University not found in local records");
+        setUniversity(null);
       }
+      setLoading(false);
     };
     
     fetchUniversity();
@@ -117,8 +110,8 @@ const UniversityDetail = () => {
   ];
 
   // Get university name and short name
-  const universityName = university ? university.title.replace("Exclusive Transcript Services for ", "").replace("Exclusive Document Services for ", "").replace(" Students", "") : "University";
-  const shortName = university ? university.short : "UNI";
+  const universityName = university?.title || "University";
+  const shortName = university?.short || "UNI";
 
   const [formData, setFormData] = useState({
     fullName: "", email: "", university: universityName, college: universityName,
@@ -127,7 +120,9 @@ const UniversityDetail = () => {
   });
 
   useEffect(() => {
-    setFormData((prev) => ({ ...prev, college: universityName, university: universityName }));
+    if (universityName !== "University") {
+      setFormData((prev) => ({ ...prev, college: universityName, university: universityName }));
+    }
   }, [universityName]);
 
   const handleChange = (e) => {
@@ -173,7 +168,7 @@ const UniversityDetail = () => {
     <div className="bg-white text-slate-900">
       {/* ══ HERO ══ */}
       <section className="relative overflow-hidden bg-white pt-28 pb-16 md:pt-36 md:pb-24">
-        <div className="absolute inset-0 bg-right bg-no-repeat opacity-100" style={{ backgroundImage: `url(${heroImage})`, backgroundSize: "contain" }} />
+        <div className="absolute inset-0 bg-right bg-no-repeat opacity-100" style={{ backgroundImage: `url(${university?.heroImage || heroImage})`, backgroundSize: "contain" }} />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(248,251,255,0.98)_0%,rgba(248,251,255,0.95)_28%,rgba(248,251,255,0.78)_48%,rgba(248,251,255,0.30)_70%,rgba(248,251,255,0.02)_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.14),_transparent_28%)]" />
         <motion.div animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 6, repeat: Infinity }} className="absolute left-0 top-0 h-72 w-72 bg-blue-200 rounded-full blur-3xl" />
@@ -181,18 +176,23 @@ const UniversityDetail = () => {
         <div className="relative mx-auto max-w-7xl px-2 md:px-4 lg:px-2">
           <div className="grid items-center gap-8 lg:grid-cols-[1.2fr_0.8fr]">
             <motion.div initial={{ opacity: 0, x: -80 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, ease: "easeOut" }} className="relative w-full pl-0 lg:-ml-10">
-              <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 shadow-sm backdrop-blur-sm">
-                <span className="h-2 w-2 rounded-full bg-blue-600" />
-                100 Transcripts LLP
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 rounded-xl bg-white shadow-md p-2 flex items-center justify-center border border-slate-100">
+                  <img src={university?.logo} alt={shortName} className="max-w-full max-h-full object-contain" />
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 shadow-sm backdrop-blur-sm">
+                  <span className="h-2 w-2 rounded-full bg-blue-600" />
+                  Partnered University
+                </div>
               </div>
 
               <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }} className="mt-5 max-w-4xl text-4xl font-bold leading-tight text-[#233a59] md:text-5xl xl:text-6xl">
                 Exclusive Transcript Services for{" "}
-                <span className="text-blue-700">{shortName} Students</span>
+                <span className="text-blue-700">{universityName}</span>
               </motion.h1>
 
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 0.8 }} className="mt-5 max-w-2xl text-base leading-8 text-slate-600 md:text-lg">
-                {universityName} students can now apply for transcript and document services without visiting the university. We make the process simple, guided, and reliable for credential evaluations and official submissions.
+                {university?.description || `${universityName} students can now apply for transcript and document services without visiting the university. We make the process simple, guided, and reliable for credential evaluations and official submissions.`}
               </motion.p>
 
               <div className="mt-6 flex flex-wrap gap-3">

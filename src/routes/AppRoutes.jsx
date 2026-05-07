@@ -31,9 +31,9 @@ const MOICertificate = lazy(() => import("../user/pages/MOICertificate"));
 const CMM = lazy(() => import("../user/pages/CMM"));
 
 /* ✅ NEW DYNAMIC PAGE */
-const CollegePage = lazy(() => import("../user/pages/CollegePage"));
 const Universities = lazy(() => import("../user/pages/Universities"));
 const UniversityDetail = lazy(() => import("../user/pages/universityDetail"));
+const PartnerCollege = lazy(() => import("../user/pages/partnercollege"));
 
 /* ================= ADMIN ================= */
 import Layout from "../Admin/components/layout/Layout";
@@ -89,9 +89,9 @@ const AppRoutes = () => {
           <Route path="services/cmm" element={<CMM />} />
 
           {/* ✅ DYNAMIC COLLEGE ROUTE */}
-          <Route path="partnered-colleges/:collegeId" element={<CollegePage />} />
           <Route path="universities" element={<Universities />} />
           <Route path="universities/:universityId" element={<UniversityDetail />} />
+          <Route path="partnered-colleges/:collegeId" element={<PartnerCollege />} />
 
         </Route>
 

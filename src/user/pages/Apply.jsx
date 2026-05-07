@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
+import digilockerLogo from "../../assets/digilocker_logo.png";
+import transcriptsIcon from "../../assets/transcript.png"; // Assuming there's a transcript or generic icon
 // NOTE: Replace this import with your actual image path
 // import flowImage from "../../assets/flow1.png";
 const flowImage = null; // placeholder — swap with your import
@@ -663,6 +666,228 @@ html, body, #root {
   .step-icon { margin: 0 auto; }
 }
 
+/* ══ Selection Panel Refined (Matches Image) ══ */
+.selection-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+.selection-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+.selection-header h1 {
+  font-size: 42px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -1.5px;
+  margin-bottom: 12px;
+}
+.selection-header p {
+  font-size: 16px;
+  color: #64748b;
+  position: relative;
+  display: inline-block;
+}
+.selection-header p::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background: #3b82f6;
+  border-radius: 2px;
+}
+
+.selection-row {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0;
+  position: relative;
+}
+.selection-card {
+  flex: 1;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 24px;
+  padding: 50px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+}
+.card-manual {
+  border-bottom: 4px solid #3b82f6;
+}
+.card-digi {
+  border-bottom: 4px solid #6d28d9;
+}
+
+.selection-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+}
+
+.card-illustration {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border-radius: 50%;
+}
+.card-illustration img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+}
+
+.card-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+.card-desc {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  height: 42px;
+}
+
+.card-features {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 35px;
+  text-align: left;
+}
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #475569;
+  font-weight: 500;
+}
+.feature-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  border: 1.5px solid currentColor;
+}
+.card-manual .feature-icon { color: #3b82f6; }
+.card-digi .feature-icon { color: #8b5cf6; }
+
+.card-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-manual { background: #2563eb; color: #fff; }
+.btn-digi { background: #6d28d9; color: #fff; }
+
+.card-footer {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.or-separator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+}
+.or-line { width: 1px; background: #e2e8f0; flex: 1; }
+.or-circle {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: #fff; border: 1px solid #e2e8f0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: #1e293b;
+  z-index: 1;
+}
+
+.selection-trust-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 60px;
+  background: #fff;
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+}
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.trust-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: #f0f7ff; color: #3b82f6;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.trust-text h4 { font-size: 14px; font-weight: 800; color: #1e293b; margin: 0; }
+.trust-text p { font-size: 11px; color: #64748b; margin: 2px 0 0; }
+
+@media (max-width: 960px) {
+  .selection-row { flex-direction: column; align-items: center; }
+  .or-separator { height: 60px; flex-direction: row; width: 100%; }
+  .or-line { height: 1px; width: 100%; }
+  .selection-trust-bar { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Sidebar Security Box */
+.sidebar-security {
+  margin-top: auto;
+  background: #eff6ff;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.security-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: #fff; color: #3b82f6;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(59,130,246,0.1);
+}
+.security-text h4 { font-size: 13px; font-weight: 800; color: #1e293b; margin: 0; }
+.security-text p { font-size: 10.5px; color: #64748b; line-height: 1.4; margin-top: 4px; }
+
 /* ══ Guideline Images ══ */
 .guideline-section { margin: 24px 0; padding: 22px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 20px; }
 .guideline-title { font-size: 15px; font-weight: 800; color: #1e293b; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
@@ -674,6 +899,37 @@ html, body, #root {
 .badge-ok { background: #0ea5e9; color: #fff; }
 .badge-no { background: #ef4444; color: #fff; }
 .guideline-label { font-size: 12px; font-weight: 700; color: #475569; line-height: 1.3; }
+
+/* ══ Dual Upload Panels ══ */
+.dual-upload-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 10px;
+}
+.upload-side {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 24px;
+}
+.side-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.manual-side .side-title { color: #3b82f6; }
+.digilocker-side .side-title { color: #6d28d9; }
+
+@media (max-width: 960px) {
+  .dual-upload-container { grid-template-columns: 1fr; }
+}
 `;
 
 /* ─────────────────────────────────────────
@@ -886,13 +1142,13 @@ function RoadmapPanel({ activeStep }) {
 
   return (
     <div className="image-panel" style={{ background: "#ffffff", boxShadow: "inset -1px 0 0 #f1f5f9" }}>
-      <div className="image-panel-inner" style={{ padding: "18vh 24px 40px" }}>
+      <div className="image-panel-inner" style={{ padding: "8vh 24px 40px" }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="panel-brand">
           <h2 style={{ fontSize: 18, color: "#0f172a", marginBottom: 4 }}>Processing Roadmap</h2>
           <p style={{ fontSize: 11, color: "#3b82f6", fontWeight: 700 }}>Visual Guide • Step-by-Step</p>
         </motion.div>
 
-        <motion.div className="roadmap" variants={container} initial="hidden" animate="show">
+        <motion.div className="roadmap" variants={container} initial="hidden" animate="show" style={{ marginBottom: 40 }}>
           {PROC_FULL.map((step, i) => {
             const isDone = isVideoState(i);
             const isActive = isActiveVideo(i);
@@ -937,27 +1193,11 @@ function RoadmapPanel({ activeStep }) {
                           top: 0
                         }}
                       />
-                      {isActive && (
-                        <motion.div
-                          animate={{ top: ["0%", "100%"] }}
-                          transition={{ duration: 2.8, repeat: Infinity, ease: "linear" }}
-                          style={{
-                            position: "absolute",
-                            left: "50%",
-                            width: 6,
-                            height: 6,
-                            borderRadius: "50%",
-                            background: col.color,
-                            boxShadow: `0 0 8px ${col.color}`,
-                            transform: "translateX(-50%)"
-                          }}
-                        />
-                      )}
                     </div>
                   )}
                 </div>
 
-                <div className="rm-content" style={{ paddingBottom: isLast ? 0 : "8vh" }}>
+                <div className="rm-content" style={{ paddingBottom: isLast ? 0 : "4vh" }}>
                   <motion.div
                     animate={{
                       color: isDone ? "#15803d" : isActive ? col.color : "#94a3b8",
@@ -979,6 +1219,14 @@ function RoadmapPanel({ activeStep }) {
             );
           })}
         </motion.div>
+
+        <div className="sidebar-security">
+          <div className="security-icon">🛡️</div>
+          <div className="security-text">
+            <h4>Your Data is Secure</h4>
+            <p>We use advanced encryption to protect your information.</p>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -1006,41 +1254,53 @@ const TlItem = ({ icon, bg, title, desc, badge, last }) => (
 /* ─────────────────────────────────────────
    UPLOAD BLOCK
 ───────────────────────────────────────── */
-const UpBlock = ({ type, label, options, upProg, upNames, upCompressed, onFile, onDelFile, onDigiLocker }) => {
+const UpBlock = ({ type, label, options, upProg, upNames, upCompressed, onFile, onDelFile, onDigiLocker, flowType }) => {
   const prog = upProg[type];
   const nm = upNames[type];
   const comprInfo = upCompressed[type];
+  const isDigiFlow = flowType === 'digilocker';
 
   return (
-    <div className="upload-box">
-      <div className="upload-lbl">📎 {label}</div>
-      <div className="upload-row">
-        <input type="file" accept="application/pdf,image/*" onChange={onFile(type)} />
-        <select>{options.map(o => <option key={o}>{o}</option>)}</select>
+    <div className={`upload-box ${isDigiFlow ? 'digi-mode' : ''}`} style={isDigiFlow ? { borderStyle: 'solid', borderColor: '#e0e7ff', background: '#f5f7ff' } : {}}>
+      <div className="upload-lbl">
+        {isDigiFlow ? '🔐' : '📎'} {label}
       </div>
+      
+      {!isDigiFlow && (
+        <div className="upload-row">
+          <input type="file" accept="application/pdf,image/*" onChange={onFile(type)} />
+          <select>{options.map(o => <option key={o}>{o}</option>)}</select>
+        </div>
+      )}
+
       {prog > 0 && (
         <div className="prog-wrap">
           <div className="prog-bar">
             <div className={`prog-fill${prog === 100 ? " pdone" : ""}`} style={{ width: `${prog}%` }} />
           </div>
-          <div className="prog-text">{prog === 100 ? "✅ Uploaded successfully" : `Uploading… ${prog}%`}</div>
+          <div className="prog-text">{prog === 100 ? "✅ Fetched successfully" : isDigiFlow ? `Fetching… ${prog}%` : `Uploading… ${prog}%`}</div>
         </div>
       )}
-      {nm && <div className="file-nm">📄 {nm}</div>}
-      {comprInfo && comprInfo.compressed && (
+      
+      {nm && <div className="file-nm" style={isDigiFlow ? { color: '#4f46e5', fontWeight: 600 } : {}}>📄 {nm}</div>}
+      
+      {comprInfo && comprInfo.compressed && !isDigiFlow && (
         <div className="file-compressed">
           🗜 Compressed: {comprInfo.originalKB}KB → {comprInfo.newKB}KB (saved {comprInfo.savedKB}KB)
         </div>
       )}
+
       <div className="upload-actions">
-        <button className="btn-attach" type="button" onClick={() => alert(`${label} attached!`)}>Attach</button>
+        {!isDigiFlow && <button className="btn-attach" type="button" onClick={() => alert(`${label} attached!`)}>Attach</button>}
         {nm && <button className="btn-del" type="button" onClick={() => onDelFile(type)}>Delete</button>}
-        <button className="btn-digilocker" type="button" onClick={() => onDigiLocker(type, label)}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-4 0v2" /><line x1="12" y1="12" x2="12" y2="16" />
-          </svg>
-          DigiLocker
-        </button>
+        {onDigiLocker && (
+          <button className="btn-digilocker" type="button" onClick={() => onDigiLocker(type, label)}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-4 0v2" /><line x1="12" y1="12" x2="12" y2="16" />
+            </svg>
+            {isDigiFlow ? 'Fetch from DigiLocker' : 'DigiLocker'}
+          </button>
+        )}
       </div>
     </div>
   );
@@ -1064,8 +1324,8 @@ const Step0 = ({ form, onChange, degrees, addDeg, rmDeg, chDeg, upProg, upNames,
     <div className="step-header">
       <div className="step-icon icon-blue">📄</div>
       <div>
-        <div className="step-title">Upload Your Documents</div>
-        <div className="step-subtitle">Fill in your personal details and upload clear certificate copies</div>
+        <div className="step-title">Transcript Application Form</div>
+        <div className="step-subtitle">Fill in your details and provide document copies to begin</div>
       </div>
     </div>
 
@@ -1151,18 +1411,70 @@ const Step0 = ({ form, onChange, degrees, addDeg, rmDeg, chDeg, upProg, upNames,
     )}
 
     <div className="sec-title">Upload Documents</div>
-    <UpBlock type="cmm" label="CMM / Yearly Marks Sheet"
-      options={["CMM", "Semester 1", "Semester 2", "Semester 3", "Semester 4", "Semester 5", "Semester 6", "Semester 7", "Semester 8"]}
-      upProg={upProg} upNames={upNames} upCompressed={upCompressed}
-      onFile={onFile} onDelFile={delFile} onDigiLocker={onDigiLocker} />
-    <UpBlock type="degree" label="Degree / Provisional Certificate"
-      options={["Degree Certificate", "Provisional Certificate"]}
-      upProg={upProg} upNames={upNames} upCompressed={upCompressed}
-      onFile={onFile} onDelFile={delFile} onDigiLocker={onDigiLocker} />
-    <UpBlock type="internship" label="Internship Certificate"
-      options={["Internship Certificate"]}
-      upProg={upProg} upNames={upNames} upCompressed={upCompressed}
-      onFile={onFile} onDelFile={delFile} onDigiLocker={onDigiLocker} />
+    <div className="dual-upload-container">
+      {/* LEFT PANEL: MANUAL UPLOAD */}
+      <div className="upload-side manual-side">
+        <div className="side-title">
+          <span>📎</span> Normal Way (Manual Upload)
+        </div>
+        <div className="side-content">
+          <UpBlock type="cmm" label="CMM / Yearly Marks Sheet"
+            options={["CMM", "Semester 1", "Semester 2", "Semester 3", "Semester 4", "Semester 5", "Semester 6", "Semester 7", "Semester 8"]}
+            upProg={upProg} upNames={upNames} upCompressed={upCompressed}
+            onFile={onFile} delFile={delFile} flowType="manual" />
+          
+          <UpBlock type="degree" label="Degree / Provisional Certificate"
+            options={["Degree Certificate", "Provisional Certificate"]}
+            upProg={upProg} upNames={upNames} upCompressed={upCompressed}
+            onFile={onFile} delFile={delFile} flowType="manual" />
+          
+          <UpBlock type="internship" label="Internship Certificate"
+            options={["Internship Certificate"]}
+            upProg={upProg} upNames={upNames} upCompressed={upCompressed}
+            onFile={onFile} delFile={delFile} flowType="manual" />
+        </div>
+      </div>
+
+      {/* RIGHT PANEL: DIGILOCKER */}
+      <div className="upload-side digilocker-side">
+        <div className="side-title">
+          <img src={digilockerLogo} alt="DigiLocker" style={{ height: '24px', width: 'auto' }} /> DigiLocker (Instantly Fetch)
+        </div>
+        <div className="side-content">
+          <div className="info-panel sky" style={{ padding: '24px', textAlign: 'center', background: '#f5f7ff', border: '2px solid #e0e7ff', borderRadius: '18px' }}>
+            <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}>
+              <img src={digilockerLogo} alt="DigiLocker" style={{ height: '60px', width: 'auto' }} />
+            </div>
+            <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>One-Click Fetch</h3>
+            <p style={{ fontSize: '13px', color: '#64748b', lineHeight: '1.5', marginBottom: '20px' }}>
+              Securely login to your DigiLocker account to automatically fetch your verified Degree, Marksheets, and other certificates.
+            </p>
+            
+            <button 
+              type="button" 
+              className="btn-digilocker" 
+              style={{ width: '100%', padding: '16px', justifyContent: 'center', fontSize: '14px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '10px' }} 
+              onClick={() => onDigiLocker('all', 'All Documents')}
+            >
+              <img src={digilockerLogo} alt="" style={{ height: '20px', width: 'auto', filter: 'brightness(0) invert(1)' }} />
+              Login & Fetch Documents
+            </button>
+
+            {/* Display status if documents are fetched */}
+            {(upNames.cmm || upNames.degree || upNames.internship) && (
+              <div style={{ marginTop: '20px', textAlign: 'left', background: '#fff', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <p style={{ fontSize: '11px', fontWeight: 700, color: '#4f46e5', textTransform: 'uppercase', marginBottom: '8px' }}>Fetched Documents:</p>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, gap: '6px', display: 'flex', flexDirection: 'column' }}>
+                  {upNames.cmm && <li style={{ fontSize: '12px', color: '#1e293b' }}>✅ {upNames.cmm}</li>}
+                  {upNames.degree && <li style={{ fontSize: '12px', color: '#1e293b' }}>✅ {upNames.degree}</li>}
+                  {upNames.internship && <li style={{ fontSize: '12px', color: '#1e293b' }}>✅ {upNames.internship}</li>}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div className="guideline-section">
       <div className="guideline-title">
@@ -1390,6 +1702,9 @@ const Step4 = ({ form, reset }) => (
    MAIN COMPONENT
 ───────────────────────────────────────── */
 export default function Apply() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [flowType, setFlowType] = useState('manual'); // Default to manual
   const [activeStep, setActiveStep] = useState(0);
   const [trackId, setTrackId] = useState("");
   const [animKey, setAnimKey] = useState(0);
@@ -1420,6 +1735,22 @@ export default function Apply() {
 
   const [digiModal, setDigiModal] = useState({ open: false, type: null, label: "" });
 
+  // ✅ Handle University Autofill from Search
+  useEffect(() => {
+    if (location.state?.university) {
+      // We no longer set flowType here so the SelectionPanel opens
+      setDegrees([
+        {
+          id: 1,
+          type: "",
+          university: location.state.university,
+          course: "",
+          college: "",
+        },
+      ]);
+    }
+  }, [location.state]);
+
   useEffect(() => {
     if (!document.getElementById("apply-css")) {
       const s = document.createElement("style");
@@ -1442,8 +1773,11 @@ export default function Apply() {
   useEffect(() => {
     const restoreState = async () => {
       const storedId = localStorage.getItem("applicationId");
+      const storedFlow = localStorage.getItem("flowType");
       const user = JSON.parse(localStorage.getItem("user"));
       const userEmail = user?.data?.email;
+
+      if (storedFlow) setFlowType(storedFlow);
 
       let fetchUrl = "";
       if (storedId) {
@@ -1462,6 +1796,10 @@ export default function Apply() {
             if (data.application_id) {
               setApplicationId(data.application_id);
               localStorage.setItem("applicationId", data.application_id);
+            }
+            if (data.flow_type) {
+              setFlowType(data.flow_type);
+              localStorage.setItem("flowType", data.flow_type);
             }
 
             // Map status to step
@@ -1558,10 +1896,30 @@ export default function Apply() {
   const handleDigiLockerFetch = useCallback((docs) => {
     const { type } = digiModal;
     if (!type || !docs.length) return;
-    const docName = docs.map(d => d.name).join(", ");
-    setUpNames(p => ({ ...p, [type]: `[DigiLocker] ${docName}` }));
-    setUpProg(p => ({ ...p, [type]: 100 }));
-    setUpCompressed(p => ({ ...p, [type]: { compressed: false } }));
+    
+    if (type === 'all') {
+      // Map docs to available types
+      const mapping = {
+        degree: 'degree',
+        marksheet: 'cmm',
+        provisional: 'degree',
+        migration: 'internship' // Just as a fallback for demo
+      };
+      
+      docs.forEach(doc => {
+        const targetType = mapping[doc.id];
+        if (targetType) {
+          setUpNames(p => ({ ...p, [targetType]: `[DigiLocker] ${doc.name}` }));
+          setUpProg(p => ({ ...p, [targetType]: 100 }));
+          setUpCompressed(p => ({ ...p, [targetType]: { compressed: false } }));
+        }
+      });
+    } else {
+      const docName = docs.map(d => d.name).join(", ");
+      setUpNames(p => ({ ...p, [type]: `[DigiLocker] ${docName}` }));
+      setUpProg(p => ({ ...p, [type]: 100 }));
+      setUpCompressed(p => ({ ...p, [type]: { compressed: false } }));
+    }
   }, [digiModal]);
 
   const handleTrack = (e) => {
@@ -1585,6 +1943,7 @@ export default function Apply() {
       Object.keys(form).forEach(key => formData.append(key, form[key]));
       formData.append("trackingId", trackingId);
       formData.append("degrees", JSON.stringify(degrees));
+      formData.append("flowType", flowType); // Save flowType with submission
 
       Object.keys(upCompressed).forEach(type => {
         const fileData = upCompressed[type];
@@ -1603,6 +1962,7 @@ export default function Apply() {
         setAppStatus("pending");
         setAdminMessage("");
         localStorage.setItem("applicationId", data.application_id);
+        localStorage.setItem("flowType", flowType); // Persist flowType locally
         goStep(1);
       } else {
         alert(data.error || "Submission failed");
@@ -1720,10 +2080,10 @@ export default function Apply() {
 
         // ✅ Opens QR / UPI apps directly
         modal: {
-          ondismiss: function () {
-            console.log("Payment popup closed");
+            ondismiss: function () {
+              // Payment popup closed
+            },
           },
-        },
       };
 
       const rzp = new window.Razorpay(options);
@@ -1755,7 +2115,9 @@ export default function Apply() {
     setApplicationId(null);
     setAppStatus("pending");
     setAdminMessage("");
+    setFlowType(null);
     localStorage.removeItem("applicationId");
+    localStorage.removeItem("flowType");
     goStep(0);
   };
 
@@ -1803,34 +2165,43 @@ export default function Apply() {
             </div>
 
             <div className="main-card card-anim" key={animKey}>
-              {activeStep === 0 && (
-                <Step0
-                  form={form} onChange={onChange}
-                  degrees={degrees} addDeg={addDeg} rmDeg={rmDeg} chDeg={chDeg}
-                  upProg={upProg} upNames={upNames} upCompressed={upCompressed}
-                  onFile={onFile} delFile={delFile}
-                  onDigiLocker={openDigiLocker}
-                  onSubmit={onSubmit}
-                  adminMessage={adminMessage}
-                />
-              )}
-              {activeStep === 1 && (
-                <Step2
-                  appStatus={appStatus}
-                  adminMessage={adminMessage}
-                  goStep={goStep}
-                  onRetry={() => goStep(0)}
-                />
-              )}
-              {activeStep === 2 && (
-                <Step1
-                  form={form}
-                  goStep={() => goStep(1)}
-                  handlePayment={handlePayment}
-                />
-              )}
-              {activeStep === 3 && <Step3 reset={reset} handleRefund={handleRefund} />}
-              {activeStep === 4 && <Step4 form={form} reset={reset} />}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeStep + (flowType || "")}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                >
+                  {activeStep === 0 && (
+                    <Step0
+                      form={form} onChange={onChange}
+                      degrees={degrees} addDeg={addDeg} rmDeg={rmDeg} chDeg={chDeg}
+                      upProg={upProg} upNames={upNames} upCompressed={upCompressed}
+                      onFile={onFile} delFile={delFile}
+                      onDigiLocker={openDigiLocker}
+                      onSubmit={onSubmit}
+                      adminMessage={adminMessage}
+                    />
+                  )}
+                  {activeStep === 1 && (
+                    <Step2
+                      appStatus={appStatus}
+                      adminMessage={adminMessage}
+                      goStep={goStep}
+                      onRetry={() => goStep(0)}
+                    />
+                  )}
+                  {activeStep === 2 && (
+                    <Step1
+                      form={form}
+                      goStep={() => goStep(1)}
+                      handlePayment={handlePayment}
+                    />
+                  )}
+                  {activeStep === 3 && <Step3 reset={reset} handleRefund={handleRefund} />}
+                  {activeStep === 4 && <Step4 form={form} reset={reset} />}
+                </motion.div>
+              </AnimatePresence>
             </div>
 
             <div className="hero-header" style={{ animationDelay: '0.4s', marginTop: 40, marginBottom: 12 }}>

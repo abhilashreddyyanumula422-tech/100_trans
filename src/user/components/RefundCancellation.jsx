@@ -16,7 +16,7 @@ const RefundCancellation = ({ open, onClose }) => {
       <div className="relative z-10 w-[95%] max-w-5xl max-h-[85vh] overflow-hidden rounded-3xl bg-white shadow-[0_20px_60px_rgba(0,0,0,0.25)] border border-white/20">
 
         {/* HEADER */}
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-[#2f4a6d] text-white rounded-t-3xl border-b border-white/10">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-gradient-to-r from-blue-700 via-cyan-600 to-indigo-700 text-white rounded-t-3xl border-b border-white/10">
           <h2 className="text-xl md:text-2xl font-bold text-white">
             Refund & Cancellation Policy
           </h2>
